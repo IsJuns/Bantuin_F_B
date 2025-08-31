@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import AppSidebar from "@/components/AppSidebar.vue"
 </script>
 
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <SidebarProvider>
+      <!-- Sidebar -->
+      <AppSidebar />
+
+      <!-- Main content -->
+      <div class="flex-1">
+        <NuxtPage />
+      </div>
+    </SidebarProvider>
   </NuxtLayout>
 </template>
