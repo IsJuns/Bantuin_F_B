@@ -1,205 +1,113 @@
 <script setup lang="ts">
-import type { SidebarProps } from '@/components/ui/sidebar'
+import { ref, defineProps, defineEmits, watch } from "vue"
+import { NuxtLink } from "#components"
+import { Home, Users, Settings, BarChart3 } from "lucide-vue-next"
 
-import { GalleryVerticalEnd } from "lucide-vue-next"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+// Props dari parent
+const props = defineProps<{ collapsed: boolean }>()
+const emit = defineEmits(["update:collapsed"])
 
-  SidebarRail,
-} from '@/components/ui/sidebar'
+const isCollapsed = ref(props.collapsed)
+watch(() => props.collapsed, (val) => isCollapsed.value = val)
 
-const props = defineProps<SidebarProps>()
-
-// This is sample data.
-const data = {
-  navMain: [
-    {
-      title: "Getting Started",
-      url: "#",
-      items: [
-        {
-          title: "Installation",
-          url: "#",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Building Your Application",
-      url: "#",
-      items: [
-        {
-          title: "Routing",
-          url: "#",
-        },
-        {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
-        },
-        {
-          title: "Rendering",
-          url: "#",
-        },
-        {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "API Reference",
-      url: "#",
-      items: [
-        {
-          title: "Components",
-          url: "#",
-        },
-        {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
-          url: "#",
-        },
-        {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-        },
-        {
-          title: "Turbopack",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Community",
-      url: "#",
-      items: [
-        {
-          title: "Contribution Guide",
-          url: "#",
-        },
-      ],
-    },
-  ],
+// toggle sidebar
+const toggleSidebar = () => {
+  isCollapsed.value = !isCollapsed.value
+  emit("update:collapsed", isCollapsed.value)
 }
+
+// daftar menu sidebar
+const items = [
+  { title: "Dashboard", icon: Home, url: "/" },
+  { title: "Input Data Warga", icon: Users, url: "/inputDataWarga" },
+  { title: "Output Data Warga", icon: Users, url: "/outputDataWarga" },
+  { title: "Analytics", icon: BarChart3, url: "/analytics" },
+  { title: "Pengaturan", icon: Settings, url: "/pengaturan" },
+]
 </script>
 
 <template>
-  <Sidebar v-bind="props">
-    <SidebarHeader>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg" as-child>
-            <a href="#">
-              <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <GalleryVerticalEnd class="size-4" />
-              </div>
-              <div class="flex flex-col gap-0.5 leading-none">
-                <span class="font-semibold">Documentation</span>
-                <span class="">v1.0.0</span>
-              </div>
-            </a>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarHeader>
-    <SidebarContent>
-      <SidebarGroup>
-        <SidebarMenu>
-          <SidebarMenuItem v-for="item in data.navMain" :key="item.title">
-            <SidebarMenuButton as-child>
-              <a :href="item.url" class="font-medium">
-                {{ item.title }}
-              </a>
-            </SidebarMenuButton>
-            <SidebarMenuSub v-if="item.items.length">
-              <SidebarMenuSubItem v-for="childItem in item.items" :key="childItem.title">
-                <SidebarMenuSubButton as-child :is-active="childItem.isActive">
-                  <a :href="childItem.url">{{ childItem.title }}</a>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
-    </SidebarContent>
-    <SidebarRail />
-  </Sidebar>
+  <!-- Desktop Sidebar -->
+  <div
+    class="hidden md:flex h-screen bg-white border-r shadow-md flex-col transition-all duration-300 fixed left-0 top-0 z-30"
+    :class="[isCollapsed ? 'w-12' : 'w-64']"
+  >
+    <!-- Tombol collapse -->
+    <button
+      class="p-2 m-2 rounded hover:bg-gray-100 self-end"
+      @click="toggleSidebar"
+    >
+      <img
+        v-if="isCollapsed"
+        src="/assets/gambar/fast-forward.png"
+        alt="expand"
+        class="w-5 h-5"
+      />
+      <img
+        v-else
+        src="/assets/gambar/fast-backward.png"
+        alt="collapse"
+        class="w-5 h-5"
+      />
+    </button>
+
+    <!-- Menu -->
+    <nav class="flex-1">
+      <ul>
+        <li v-for="item in items" :key="item.title">
+          <NuxtLink
+            :to="item.url"
+            class="flex items-center gap-2 p-3 hover:bg-gray-100"
+          >
+            <component :is="item.icon" class="w-5 h-5" />
+            <span v-if="!isCollapsed">{{ item.title }}</span>
+          </NuxtLink>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Mobile Sidebar -->
+  <div class="md:hidden">
+    <!-- Tombol buka -->
+    <button
+      class="p-2 m-2 rounded bg-gray-200"
+      @click="isCollapsed = true"
+    >
+      ☰
+    </button>
+
+    <!-- Overlay -->
+    <div
+      v-if="isCollapsed"
+      class="fixed inset-0 bg-black bg-opacity-50 z-40"
+      @click="isCollapsed = false"
+    />
+
+    <!-- Drawer -->
+    <div
+      v-if="isCollapsed"
+      class="fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 p-4"
+    >
+      <button
+        class="mb-4 p-2 rounded bg-gray-200"
+        @click="isCollapsed = false"
+      >
+        ✖
+      </button>
+
+      <ul>
+        <li v-for="item in items" :key="item.title">
+          <NuxtLink
+            :to="item.url"
+            class="flex items-center gap-2 p-3 hover:bg-gray-100"
+            @click="isCollapsed = false"
+          >
+            <component :is="item.icon" class="w-5 h-5" />
+            <span>{{ item.title }}</span>
+          </NuxtLink>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
